@@ -212,20 +212,18 @@ void log_function(void)
         t_log[i][0] = t[0];
         t_log[i][1] = t[1];
         t_log[i][2] = t[2];
-        /*
-        pc.printf("%f %f %f\r\n", 
-        t_log[i][0], t_log[i][1], t_log[i][2]);
-        */
-        if ((t_log[i][0] > 1 / 2^(1/2))|
-            (t_log[i][1] > 1 / 2^(1/2))|
-            (t_log[i][2] > 1 / 2^(1/2))|
-            (t_log[i][0] < -1 / 2^(1/2))|
-            (t_log[i][1] < -1 / 2^(1/2))|
-            (t_log[i][2] < -1 / 2^(1/2)))
+
+        // pc.printf("%f %f %f\r\n", 
+        // t_log[i][0], t_log[i][1], t_log[i][2]);
+
+        if ((t_log[i][0] > 0.707107)|
+            (t_log[i][1] > 0.707107)|
+            (t_log[i][0] < -0.707107)|
+            (t_log[i][1] < -0.707107)) {
             tilt[i] = 1;
-        else
+        } else {
             tilt[i] = 0;
-        
+        }
             
         wait(0.1);
     }

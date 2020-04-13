@@ -3,15 +3,15 @@ import numpy as np
 import serial
 import time
 
-x = np.arange(0, 100, 1)
-y = np.arange(0, 100, 1)
-z = np.arange(0, 100, 1)
-tilt = np.arange(0, 100, 1)
-i = np.arange(0, 100, 1)
+x = np.arange(0, 100, 1, dtype=float)
+y = np.arange(0, 100, 1, dtype=float)
+z = np.arange(0, 10, 1, dtype=float)
+tilt = np.arange(0, 100, 1, dtype=int)
+i = np.arange(0, 100, 1, dtype=int)
 
-serdev = 'dev/ttyACM0'
+serdev = '/dev/ttyACM0'
 s = serial.Serial(serdev);
-for a in range(0, 100):
+for a in range(100):
     line = s.readline()
     x[i] = float(line)
     line = s.readline()
