@@ -18,6 +18,8 @@ int i;
 
 float t_log[100][3];
 
+int tilt[100];
+
 #define UINT14_MAX        16383
 
 // FXOS8700CQ I2C address
@@ -120,56 +122,57 @@ int main() {
 
    // pc.printf("Here is %x\r\n", who_am_i);
 
-        while (1) {
+    btn.fall(ledQueue.event(&led_function));
+    // btn.fall(logQueue.call(&log_function));
+
+    while (1) {
 
 
-            FXOS8700CQ_readRegs(FXOS8700Q_OUT_X_MSB, res, 6);
+        FXOS8700CQ_readRegs(FXOS8700Q_OUT_X_MSB, res, 6);
 
 
-            acc16 = (res[0] << 6) | (res[1] >> 2);
+        acc16 = (res[0] << 6) | (res[1] >> 2);
 
-            if (acc16 > UINT14_MAX/2)
+        if (acc16 > UINT14_MAX/2)
 
-                acc16 -= UINT14_MAX;
+            acc16 -= UINT14_MAX;
 
-            t[0] = ((float)acc16) / 4096.0f;
-
-
-            acc16 = (res[2] << 6) | (res[3] >> 2);
-
-            if (acc16 > UINT14_MAX/2)
-
-                acc16 -= UINT14_MAX;
-
-            t[1] = ((float)acc16) / 4096.0f;
+        t[0] = ((float)acc16) / 4096.0f;
 
 
-            acc16 = (res[4] << 6) | (res[5] >> 2);
+        acc16 = (res[2] << 6) | (res[3] >> 2);
 
-            if (acc16 > UINT14_MAX/2)
+        if (acc16 > UINT14_MAX/2)
 
-                acc16 -= UINT14_MAX;
+            acc16 -= UINT14_MAX;
 
-            t[2] = ((float)acc16) / 4096.0f;
+        t[1] = ((float)acc16) / 4096.0f;
 
-            /*printf("Here is main: \n");
-            printf("FXOS8700Q ACC: X=%1.4f(%x%x) Y=%1.4f(%x%x) Z=%1.4f(%x%x)\r\n",\
 
-                    t[0], res[0], res[1],\
+        acc16 = (res[4] << 6) | (res[5] >> 2);
 
-                    t[1], res[2], res[3],\
+        if (acc16 > UINT14_MAX/2)
 
-                    t[2], res[4], res[5]\
+            acc16 -= UINT14_MAX;
 
-            );*/
-            
-            btn.fall(ledQueue.event(&led_function));
-            // btn.fall(logQueue.call(&log_function));
-            
+        t[2] = ((float)acc16) / 4096.0f;
 
-            wait(0.05f);
+        /*printf("Here is main: \n");
+        printf("FXOS8700Q ACC: X=%1.4f(%x%x) Y=%1.4f(%x%x) Z=%1.4f(%x%x)\r\n",\
 
-        }
+                t[0], res[0], res[1],\
+
+                t[1], res[2], res[3],\
+
+                t[2], res[4], res[5]\
+
+        );*/
+        
+
+        wait(0.05f);
+
+    }
+
 
 }
 
@@ -193,6 +196,7 @@ void FXOS8700CQ_writeRegs(uint8_t * data, int len) {
 
 void led_function(void)
 {
+    i = 0;
     // pc.printf("Here is led\r\n");
     logQueue.call(&log_function);
     while (i < 100) {
@@ -212,11 +216,27 @@ void log_function(void)
         pc.printf("%f %f %f\r\n", 
         t_log[i][0], t_log[i][1], t_log[i][2]);
         */
+        if ((t_log[i][0] > 1 / 2^(1/2))|
+            (t_log[i][1] > 1 / 2^(1/2))|
+            (t_log[i][2] > 1 / 2^(1/2))|
+            (t_log[i][0] < -1 / 2^(1/2))|
+            (t_log[i][1] < -1 / 2^(1/2))|
+            (t_log[i][2] < -1 / 2^(1/2)))
+            tilt[i] = 1;
+        else
+            tilt[i] = 0;
+        
+            
         wait(0.1);
     }
-    for (i = 100; i < 200; i++) {
-        pc.printf("%f %f %f\r\n", 
-        t_log[i][0], t_log[i][1], t_log[i][2]);
+    for (i = 0; i < 100; i++) {
+        pc.printf("%f\r\n", t_log[i][0]);
+        wait(0.1);
+        pc.printf("%f\r\n", t_log[i][1]);
+        wait(0.1);
+        pc.printf("%f\r\n", t_log[i][2]);
+        wait(0.1);
+        pc.printf("%d\r\n", tilt[i]);
         wait(0.1);
     }
 }
