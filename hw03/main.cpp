@@ -16,6 +16,8 @@ EventQueue logQueue;
 
 int i;
 
+int on;
+
 float t_log[100][3];
 
 int tilt[100];
@@ -196,10 +198,10 @@ void FXOS8700CQ_writeRegs(uint8_t * data, int len) {
 
 void led_function(void)
 {
-    i = 0;
+    on = 1;
     // pc.printf("Here is led\r\n");
     logQueue.call(&log_function);
-    while (i < 100) {
+    while (on) {
         led3 = !led3;
         wait(0.5);
     }
@@ -207,6 +209,7 @@ void led_function(void)
 
 void log_function(void) 
 {
+    on = 1;
     // pc.printf("Here is log\r\n");
     for (i =0; i < 100; i++) {
         t_log[i][0] = t[0];
@@ -227,6 +230,7 @@ void log_function(void)
             
         wait(0.1);
     }
+    on = 0;
     for (i = 0; i < 100; i++) {
         pc.printf("%f\r\n", t_log[i][0]);
         wait(0.1);
